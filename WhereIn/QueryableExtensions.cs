@@ -1,6 +1,8 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
+namespace WhereIn;
+
 public static class QueryableExtensions
 {
     private static readonly MethodInfo ContainsGenericMethod = typeof(Enumerable)
@@ -12,7 +14,7 @@ public static class QueryableExtensions
         Expression<Func<TQuery, TKey>> keySelector,
         IEnumerable<TKey> values,
         IValueBucketizer valueBucketizer)
-    where TKey : notnull
+        where TKey : notnull
     {
         var distinctValues = values.Distinct().ToArray();
         if (!distinctValues.Any())
@@ -75,12 +77,12 @@ public static class QueryableExtensions
         }
 
         var conditionalExpressions = valueBucketizer.Bucketize(distinctValues)
-                                                    .Select(v =>
-                                                    {
-                                                        Expression<Func<TKey>> valueAsExpression = () => v;
-                                                        return Expression.Equal(keySelector.Body, valueAsExpression.Body);
-                                                    })
-                                                    .ToArray();
+            .Select(v =>
+            {
+                Expression<Func<TKey>> valueAsExpression = () => v;
+                return Expression.Equal(keySelector.Body, valueAsExpression.Body);
+            })
+            .ToArray();
 
         var body = AggregateConditionsIntoOrElseTree(conditionalExpressions);
         var notBody = Expression.Not(body);

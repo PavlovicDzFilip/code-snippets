@@ -1,3 +1,5 @@
+namespace WhereIn;
+
 public class ValueBucketizer : IValueBucketizer
 {
     public static readonly ValueBucketizer Instance = new();
